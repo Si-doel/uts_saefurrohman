@@ -15,12 +15,17 @@ WebAPP Merchant adalah aplikasi berbasis Laravel yang dikembangkan menggunakan k
 - Middleware Role
 - Responsive Dashboard UI
 
+## Database
+
+- File export database D:\laragon\www\program-uts\database\sql
+
 ## 🛠 Teknologi Yang Digunakan
 
 - Laravel 13
 - PHP
 - MySQL
 - Bootstrap
+- Breeze
 - Blade Template
 - Chart.js
 - FullCalendar
