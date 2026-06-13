@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Menu;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MenuSeeder extends Seeder
@@ -56,7 +55,7 @@ class MenuSeeder extends Seeder
         Menu::updateOrCreate(
             ['name' => 'Cetak Laporan', 'parent_id' => $reportMenu->id, 'role' => 'merchant'],
             [
-                'route' => null,
+                'route' => 'products.export',
                 'icon' => 'fas fa-circle',
                 'order' => 1,
                 'is_active' => true,

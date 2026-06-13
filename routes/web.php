@@ -8,6 +8,7 @@ use App\Http\Controllers\DeveloperMenuController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Category;
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -30,6 +31,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('menus/{menu}/toggle', [DeveloperMenuController::class, 'toggle'])->name('menus.toggle');
         Route::resource('menus', DeveloperMenuController::class)->except(['show']);
     });
+
+    Route::get('/products/export', [ProductController::class, 'export'])
+        ->name('products.export');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/show', [ProfileController::class, 'show'])->name('profile.show');
