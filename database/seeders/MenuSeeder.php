@@ -55,7 +55,7 @@ class MenuSeeder extends Seeder
         Menu::updateOrCreate(
             ['name' => 'Cetak Laporan', 'parent_id' => $reportMenu->id, 'role' => 'merchant'],
             [
-                'route' => 'products.export',
+                'route' => 'export.index',
                 'icon' => 'fas fa-circle',
                 'order' => 1,
                 'is_active' => true,

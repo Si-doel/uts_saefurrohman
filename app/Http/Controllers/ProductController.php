@@ -102,6 +102,11 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
+    public function exportPage(): View
+    {
+        return view('pages.export.index');
+    }
+
     public function export()
     {
         return Excel::download(new ProductsExport(), 'products.xlsx');

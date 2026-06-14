@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('menus', DeveloperMenuController::class)->except(['show']);
     });
 
+    Route::get('/export', [ProductController::class, 'exportPage'])
+        ->name('export.index');
+
     Route::get('/products/export', [ProductController::class, 'export'])
         ->name('products.export');
 
