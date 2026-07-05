@@ -3,7 +3,7 @@
 @section('page-header')
     <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
         <div>
-            <h4 class="page-title mb-2">Product Category</h4>
+            <h4 class="page-title mb-2">Kategori Produk</h4>
             <a href="{{ route('categories.create') }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-plus-circle me-1"></i>Tambah Kategori
             </a>

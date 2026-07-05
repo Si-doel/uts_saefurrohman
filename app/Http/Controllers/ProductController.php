@@ -50,8 +50,33 @@ class ProductController extends Controller
             'id_kategori' => 'required|exists:categories,id_kategori',
             'nama_produk' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'harga' => 'required|integer|min:0',
+
+            'harga_beli' => 'required|integer|min:0|max:999999999',
+            'harga_jual' => 'required|integer|min:0|max:999999999|gte:harga_beli',
+
+            'min_stok' => 'required|integer|min:0|max:999999',
+            'max_stok' => 'required|integer|min:0|max:999999|gte:min_stok',
+
+            'satuan' => 'required|in:PCS,BOX,CTN,PACK,LUSIN,ROLL',
+            'fraction' => 'required|integer|min:1|max:1000',
+
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ], [
+            'harga_beli.max' => 'Harga beli maksimal Rp999.999.999.',
+            'harga_jual.max' => 'Harga jual maksimal Rp999.999.999.',
+            'harga_jual.gte' => 'Harga jual tidak boleh lebih kecil dari harga beli.',
+
+            'stok.max' => 'Stok maksimal 999.999.',
+            'min_stok.max' => 'Minimum stok maksimal 999.999.',
+            'max_stok.max' => 'Maksimum stok maksimal 999.999.',
+            'max_stok.gte' => 'Maksimum stok harus lebih besar atau sama dengan minimum stok.',
+
+            'fraction.min' => 'Fraction minimal 1.',
+            'fraction.max' => 'Fraction maksimal 1000.',
+
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.mimes' => 'Format gambar harus jpeg, jpg, png, gif, atau webp.',
+            'foto.max' => 'Ukuran gambar maksimal 2 MB.',
         ]);
 
         $path = $request->file('foto')->store('uploads/products', 'public');
@@ -75,20 +100,34 @@ class ProductController extends Controller
             'id_kategori' => 'required|exists:categories,id_kategori',
             'nama_produk' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'harga' => 'required|integer|min:0',
+
+            'harga_beli' => 'required|integer|min:0|max:999999999',
+            'harga_jual' => 'required|integer|min:0|max:999999999|gte:harga_beli',
+
+            'min_stok' => 'required|integer|min:0|max:999999',
+            'max_stok' => 'required|integer|min:0|max:999999|gte:min_stok',
+
+            'satuan' => 'required|in:PCS,BOX,CTN,PACK,LUSIN,ROLL',
+            'fraction' => 'required|integer|min:1|max:1000',
+
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
+
             if ($product->foto && Storage::disk('public')->exists($product->foto)) {
                 Storage::disk('public')->delete($product->foto);
             }
-            $validated['foto'] = $request->file('foto')->store('uploads/products', 'public');
+
+            $validated['foto'] = $request->file('foto')
+                ->store('uploads/products', 'public');
         }
 
         $product->update($validated);
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Product $product): RedirectResponse

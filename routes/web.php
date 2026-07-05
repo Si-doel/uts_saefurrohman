@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DeveloperUserController;
 use App\Http\Controllers\DeveloperMenuController;
+use App\Http\Controllers\SalesController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Category;
 
@@ -18,19 +19,25 @@ Route::get('/dashboard', function () {
     return view('pages.index', compact('categories'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::get('/dashboard', function () {
-//     return view('pages.index');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
+    // Route::get('/sales/product/{product}', [SalesController::class, 'getProduct'])
+    //     ->name('sales.product');
+
+    Route::get('/sales/product/{id}', [SalesController::class, 'getProduct'])
+    ->name('sales.product');
+    // Route::get('/sales/product/{id}', function ($id) {
+    // dd($id);
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class)->except(['show']);
+    Route::resource('sales', SalesController::class)->except(['show']);
 
     Route::prefix('developer')->name('developer.')->middleware('role:developer')->group(function () {
         Route::resource('users', DeveloperUserController::class)->except(['show']);
         Route::patch('menus/{menu}/toggle', [DeveloperMenuController::class, 'toggle'])->name('menus.toggle');
         Route::resource('menus', DeveloperMenuController::class)->except(['show']);
     });
+
+
 
     Route::get('/export', [ProductController::class, 'exportPage'])
         ->name('export.index');
@@ -44,4 +51,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

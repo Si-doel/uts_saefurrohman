@@ -42,7 +42,7 @@
                   <ul class="nav nav-collapse">
                     <li>
                       <a href="{{ route('dashboard') }}">
-                        <span class="sub-item">Dashboard Utama</span>
+                        <span class="sub-item">Dashboard</span>
                       </a>
                     </li>
                   </ul>
