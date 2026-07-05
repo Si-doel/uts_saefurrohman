@@ -3,7 +3,7 @@
 @section('page-header')
     <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
         <div>
-            <h4 class="page-title mb-2">Merchant Products</h4>
+            <h4 class="page-title mb-2">PRODUK SMART KATALOG</h4>
             <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm"><i
                     class="fa fa-plus-circle me-1"></i>Tambah Produk</a>
         </div>
@@ -74,7 +74,7 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary me-2">
-                        <i class="fa fa-search me-1"></i>Filter
+                        <i class="fa fa-search me-1"></i>Cari
                     </button>
                     @if (request('q') || request('category'))
                         <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">
@@ -95,7 +95,11 @@
                             <th>No</th>
                             <th>Kategori</th>
                             <th>Nama Produk</th>
-                            <th>Harga</th>
+                            <th>Harga Beli</th>
+                            <th>Harga Jual</th>
+                            <th>Stok</th>
+                            <th>stok min</th>
+                            <th>stok max</th>
                             <th>Foto</th>
                             <th>Aksi</th>
                         </tr>
@@ -106,7 +110,11 @@
                                 <td>{{ $loop->iteration + ($products->currentPage() - 1) * $products->perPage() }}</td>
                                 <td>{{ $product->category->nama_kategori ?? '-' }}</td>
                                 <td>{{ $product->nama_produk }}</td>
-                                <td>{{ number_format($product->harga, 0, ',', '.') }}</td>
+                                <td>{{ number_format($product->harga_beli, 0, ',', '.') }}</td>
+                                <td>{{ number_format($product->harga_jual, 0, ',', '.') }}</td>
+                                <td>{{ $product->stok }}</td>
+                                <td>{{ $product->min_stok }}</td>
+                                <td>{{ $product->max_stok }}</td>
                                 <td>
                                     @if ($product->foto)
                                         <img src="{{ asset('storage/' . $product->foto) }}"
@@ -134,7 +142,8 @@
             </div>
 
             <div class="mt-3">
-                {{ $products->links() }}
+                {{ $products->links('pagination::bootstrap-5') }}
+                {{-- {{ $products->links() }} --}}
             </div>
         </div>
     </div>
