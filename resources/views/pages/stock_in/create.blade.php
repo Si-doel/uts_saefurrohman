@@ -3,7 +3,7 @@
 @section('page-header')
 <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
     <div>
-        <h4 class="page-title mb-0">Tambah Transaksi Penjualan</h4>
+        <h4 class="page-title mb-0">Tambah Transaksi Masuk</h4>
     </div>
     <div>
         <ul class="breadcrumbs mb-0">
@@ -16,7 +16,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ route('sales.index') }}">Sales</a>
+                <a href="{{ route('stock_in.index') }}">Stock IN</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -32,7 +32,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('sales.store') }}" method="POST">
+            <form action="{{ route('stock_in.store') }}" method="POST">
                 @csrf
 
                 {{-- Pilih produk --}}
@@ -51,7 +51,7 @@
                     </select>
 
                     {{-- Menyimpan harga asli untuk Javascript --}}
-                    <input type="hidden" id="harga_jual_value">
+                    <input type="hidden" id="harga_beli_value">
                     {{-- Menyimpan nilai fraction untuk Javascript --}}
                     <input type="hidden" id="fraction_value">
                     @error('id_produk')
@@ -69,8 +69,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="fw-bold">Harga Jual</label>
-                                <div id="harga_jual" class="form-control bg-light text-end fw-bold">
+                                <label class="fw-bold">Harga Beli</label>
+                                <div id="harga_beli" class="form-control bg-light text-end fw-bold">
                                     -
                                 </div>
                             </div>
@@ -143,7 +143,7 @@
 
                 {{-- Tombol aksi --}}
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('sales.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('stock_in.index') }}" class="btn btn-secondary">
                         CANCEL
                     </a>
                     <button type="submit" class="btn btn-primary">
@@ -165,7 +165,7 @@
 
 {{-- Memanggil Javascript khusus modul Sales --}}
 @push('scripts')
-    <script src="{{ asset('template/assets/js/sales.js') }}"></script>
+    <script src="{{ asset('template/assets/js/stockin.js') }}"></script>
 @endpush
 
 @if (session('success'))

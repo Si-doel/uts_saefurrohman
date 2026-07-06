@@ -3,7 +3,7 @@
 @section('page-header')
 <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
     <div>
-        <h4 class="page-title mb-0">Edit Produk</h4>
+        <h4 class="page-title mb-0">EDIT PRODUK</h4>
     </div>
     <div>
         <ul class="breadcrumbs mb-0">

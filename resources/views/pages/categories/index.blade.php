@@ -3,7 +3,7 @@
 @section('page-header')
     <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
         <div>
-            <h4 class="page-title mb-2">Kategori Produk</h4>
+            <h4 class="page-title mb-2">KATEGORI PRODUK</h4>
             <a href="{{ route('categories.create') }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-plus-circle me-1"></i>Tambah Kategori
             </a>
@@ -30,6 +30,15 @@
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
         </div>
     @endif
 

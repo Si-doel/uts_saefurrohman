@@ -3,9 +3,9 @@
 @section('page-header')
     <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
         <div>
-            <h4 class="page-title mb-2">TRANSAKSI PENJUALAN</h4>
-            <a href="{{ route('sales.create') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus-circle me-1"></i>Tambah
-                Transaksi Penjualan</a>
+            <h4 class="page-title mb-2">TRANSAKSI MASUK</h4>
+            <a href="{{ route('stock_in.create') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus-circle me-1"></i>Tambah
+                Transaksi masuk</a>
         </div>
         <div>
             <ul class="breadcrumbs mb-0">
@@ -18,7 +18,7 @@
                     <i class="icon-arrow-right"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="#">Sales</a>
+                    <a href="#">Stock In</a>
                 </li>
             </ul>
         </div>
@@ -32,7 +32,7 @@
         </div>
     @endif
 
-    {{-- Isi halaman Sales Index --}}
+    {{-- Isi halaman Stock In Index --}}
 
     <div class="card">
         <div class="card-body">
@@ -43,13 +43,13 @@
                         <th>Tanggal</th>
                         <th>Produk</th>
                         <th>Qty</th>
-                        <th>Harga Jual</th>
+                        <th>Harga Beli</th>
                         <th>Subtotal</th>
                         <th>Sales</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($sales as $item)
+                    @forelse($stockIns as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
@@ -62,13 +62,13 @@
                     @empty
                         <tr>
                             <td colspan="7" class="text-center">
-                                Belum ada transaksi penjualan.
+                                Belum ada transaksi masuk.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-            {{ $sales->links() }}
+            {{ $stockIns->links() }}
         </div>
     </div>
 @endsection

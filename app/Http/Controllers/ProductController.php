@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ProductsExport;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -130,24 +128,47 @@ class ProductController extends Controller
             ->with('success', 'Produk berhasil diperbarui.');
     }
 
+    /**
+     * Menghapus produk.
+     */
     public function destroy(Product $product): RedirectResponse
     {
-        if ($product->foto && Storage::disk('public')->exists($product->foto)) {
-            Storage::disk('public')->delete($product->foto);
+        // Hitung jumlah transaksi
+        $totalSales = $product->sales()->count();
+        $totalStockIn = $product->stockIns()->count();
+
+        // Jika produk sudah memiliki transaksi
+        if ($totalSales > 0 || $totalStockIn > 0) {
+
+            $message = [];
+
+            if ($totalStockIn > 0) {
+                $message[] = $totalStockIn . ' Stock In';
+            }
+
+            if ($totalSales > 0) {
+                $message[] = $totalSales . ' Sales';
+            }
+
+            return redirect()
+                ->route('products.index')
+                ->with(
+                    'error',
+                    'Produk "' . $product->nama_produk .
+                        '" tidak dapat dihapus karena masih memiliki riwayat transaksi (' .
+                        implode(', ', $message) .
+                        ').'
+                );
         }
 
+        // Soft Delete produk
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
-    }
-
-    public function exportPage(): View
-    {
-        return view('pages.export.index');
-    }
-
-    public function export()
-    {
-        return Excel::download(new ProductsExport(), 'products.xlsx');
+        return redirect()
+            ->route('products.index')
+            ->with(
+                'success',
+                'Produk berhasil dihapus.'
+            );
     }
 }
