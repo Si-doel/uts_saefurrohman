@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Sales;
+use App\Models\StockIn;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class SalesController extends Controller
+class StockInController extends Controller
 {
     /**
-     * Menampilkan daftar transaksi penjualan.
+     * Menampilkan daftar transaksi stock in.
      */
     public function index(Request $request): View
     {
         $query = $request->query('q');
 
-        $sales = Sales::with(['product', 'user'])
+        $stockIns = StockIn::with(['product', 'user'])
             ->when($query, function ($builder, $query) {
                 $builder->whereHas('product', function ($q) use ($query) {
                     $q->where('nama_produk', 'like', "%{$query}%");
@@ -29,16 +29,17 @@ class SalesController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('pages.sales.index', compact('sales', 'query'));
+        return view('pages.stock_in.index', compact('stockIns', 'query'));
     }
 
     /**
-     * Menampilkan halaman tambah transaksi penjualan.
+     * Menampilkan halaman tambah stock in.
      */
     public function create(): View
     {
         $products = Product::orderBy('nama_produk')->get();
-        return view('pages.sales.create', compact('products'));
+
+        return view('pages.stock_in.create', compact('products'));
     }
 
     /**
@@ -47,10 +48,11 @@ class SalesController extends Controller
     public function getProduct(int $id)
     {
         $product = Product::findOrFail($id);
+
         return response()->json([
             'id_produk'   => $product->id_produk,
             'nama_produk' => $product->nama_produk,
-            'harga_jual'  => $product->harga_jual,
+            'harga_beli'  => $product->harga_beli,
             'stok'        => $product->stok,
             'satuan'      => $product->satuan,
             'fraction'    => $product->fraction,
@@ -58,7 +60,7 @@ class SalesController extends Controller
     }
 
     /**
-     * Menyimpan transaksi penjualan.
+     * Menyimpan transaksi stock in.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -74,47 +76,54 @@ class SalesController extends Controller
             'qty.max'            => 'Qty maksimal 9999.',
         ]);
 
-        // Ambil data produk
-        $product = Product::findOrFail($validated['id_produk']);
-
-        // Validasi stok sebelum transaksi dimulai
-        if ($validated['qty'] > $product->stok) {
-
-            return back()
-                ->withInput()
-                ->with('error', 'Stok tidak mencukupi. Stok tersedia : ' . $product->stok);
-        }
-
         try {
 
             // Memulai transaksi database
             DB::beginTransaction();
-            // Hitung subtotal
-            $subtotal = $product->harga_jual * $validated['qty'];
-            // Simpan transaksi penjualan
-            Sales::create([
+
+            // Ambil data produk
+            $product = Product::findOrFail($validated['id_produk']);
+
+            // Validasi harga beli
+            if ($product->harga_beli <= 0) {
+
+                DB::rollBack();
+
+                return back()
+                    ->withInput()
+                    ->with(
+                        'error',
+                        'Harga beli produk "' . $product->nama_produk .
+                            '" masih Rp 0. Silakan update harga beli pada Master Produk terlebih dahulu.'
+                    );
+            }
+
+            // Hitung subtotal berdasarkan harga beli
+            $subtotal = $product->harga_beli * $validated['qty'];
+
+            // Simpan transaksi stock in
+            StockIn::create([
                 'id_produk'  => $product->id_produk,
                 'id_user'    => Auth::id(),
                 'qty'        => $validated['qty'],
                 'satuan'     => $product->satuan,
                 'fraction'   => $product->fraction,
-                'harga'      => $product->harga_jual,
+                'harga'      => $product->harga_beli,
                 'subtotal'   => $subtotal,
                 'keterangan' => $validated['keterangan'],
             ]);
 
-            // Kurangi stok produk
-            $product->decrement('stok', $validated['qty']);
+            // Tambahkan stok produk
+            $product->increment('stok', $validated['qty']);
 
-            // Simpan seluruh perubahan
+            // Simpan transaksi
             DB::commit();
 
             return redirect()
-                ->route('sales.index')
-                ->with('success', 'Transaksi penjualan berhasil disimpan.');
+                ->route('stock_in.index')
+                ->with('success', 'Transaksi stock in berhasil disimpan.');
         } catch (\Exception $e) {
 
-            // Batalkan seluruh transaksi jika terjadi error
             DB::rollBack();
 
             return back()

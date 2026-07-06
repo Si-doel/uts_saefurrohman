@@ -1,115 +1,139 @@
 $(document).ready(function () {
 
+    // Reset form saat pertama kali halaman dibuka
+    resetProduct();
+
     // Ketika produk dipilih
     $('#id_produk').on('change', function () {
         let id = $(this).val();
+
+        // Reset Qty & Subtotal
         $('#qty').val('');
         $('#subtotal').val('');
-        clearQtyValidation();
+
+        // Bersihkan validasi Qty
+        $('#qty').removeClass('is-invalid');
+        $('#qty').siblings('.invalid-feedback.dynamic').remove();
+
         if (id === '') {
             resetProduct();
             return;
-        }  
+        }
+
         loadProduct(id);
+
     });
 
+    // Ketika Qty berubah
     $('#qty').on('input', function () {
+
         validateQty();
+
         calculateSubtotal();
+
     });
+
 });
 
 /* Mengambil data produk melalui AJAX */
 
 function loadProduct(id) {
     $.ajax({
-        url: '/sales/product/' + id,
+        url: '/stock_in/product/' + id,
         type: 'GET',
         success: function (response) {
             fillProduct(response);
         },
+
         error: function () {
             alert('Produk tidak ditemukan.');
+
             resetProduct();
         }
     });
 }
 
-
 /* Menampilkan informasi produk */
 
 function fillProduct(product) {
-    $('#harga_jual').text(formatRupiah(product.harga_jual));
+    $('#harga_beli').text(formatRupiah(product.harga_beli));
     $('#stok').text(product.stok);
     $('#satuan').text(product.satuan);
     $('#fraction').text(product.fraction);
-    $('#harga_jual_value').val(product.harga_jual);
-    $('#qty').attr('max', product.stok);
-    $('#qty').val('');
-    $('#subtotal').val('');
-    // clearQtyValidation();
+    // Simpan harga beli
+    $('#harga_beli_value').val(product.harga_beli);
+    // Validasi harga beli
+    if (product.harga_beli <= 0) {
+        alert(
+            'Harga beli produk masih Rp 0.\n' +
+            'Silakan update harga beli pada Master Produk terlebih dahulu.'
+        );
+        $('#qty').prop('disabled', true);
+        $('button[type="submit"]').prop('disabled', true);
+        return;
+    }
+
+    // Aktifkan kembali Qty & tombol Save
+    $('#qty').prop('disabled', false);
+    $('button[type="submit"]').prop('disabled', false);
+
+    calculateSubtotal();
+
     $('#qty').focus();
 
 }
 
 /* Validasi Qty */
 
+
 function validateQty() {
+
     let qty = parseInt($('#qty').val()) || 0;
-    let max = parseInt($('#qty').attr('max')) || 0;
-    clearQtyValidation();
-    if (qty > max) {
+    $('#qty').removeClass('is-invalid');
+    $('#qty').siblings('.invalid-feedback.dynamic').remove();
+    if (qty <= 0) {
         $('#qty').addClass('is-invalid');
         $('#qty').after(
-            '<div id="qty-js-error" class="invalid-feedback dynamic">' +
-            'Qty melebihi stok yang tersedia.' +
+            '<div class="invalid-feedback dynamic">' +
+            'Qty harus lebih besar dari 0.' +
             '</div>'
         );
     }
 }
 
-
-/* Menghapus validasi Qty */
-
-function clearQtyValidation() {
-    $('#qty').removeClass('is-invalid');
-    $('#qty-server-error').remove();
-    $('#qty-js-error').remove();
-
-}
-
 /* Menghitung subtotal */
 
 function calculateSubtotal() {
-    let hargaJual = parseInt($('#harga_jual_value').val()) || 0;
+    let hargaBeli = parseInt($('#harga_beli_value').val()) || 0;
     let qty = parseInt($('#qty').val()) || 0;
     if (qty <= 0) {
         $('#subtotal').val('');
         return;
     }
-    let subtotal = hargaJual * qty;
+
+    let subtotal = hargaBeli * qty;
     $('#subtotal').val(formatRupiah(subtotal));
 }
 
-
 /* Reset informasi produk */
 
-
 function resetProduct() {
-    $('#harga_jual').text('-');
+    $('#harga_beli').text('-');
     $('#stok').text('-');
     $('#satuan').text('-');
     $('#fraction').text('-');
-    $('#harga_jual_value').val('');
+    $('#harga_beli_value').val('');
     $('#fraction_value').val('');
     $('#qty').val('');
-    $('#qty').removeAttr('max');
     $('#subtotal').val('');
-    clearQtyValidation();
+    $('#qty').prop('disabled', true);
+    $('button[type="submit"]').prop('disabled', true);
+    $('#qty').removeClass('is-invalid');
+    $('#qty').siblings('.invalid-feedback.dynamic').remove();
 }
 
-
 /* Format Rupiah */
+
 
 function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', {

@@ -3,7 +3,7 @@
 @section('page-header')
     <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
         <div>
-            <h4 class="page-title mb-0">Edit Kategori</h4>
+            <h4 class="page-title mb-0">EDIT KATEGORI</h4>
         </div>
         <div>
             <ul class="breadcrumbs mb-0">
@@ -22,7 +22,7 @@
                     <i class="icon-arrow-right"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="#">Edit</a>
+                    <a href="#">Edit Kategori</a>
                 </li>
             </ul>
         </div>

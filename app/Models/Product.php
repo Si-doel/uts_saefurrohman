@@ -2,17 +2,32 @@
 
 namespace App\Models;
 
+use App\Models\Category;
+use App\Models\Sales;
+use App\Models\StockIn;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
+    /**
+     * Nama tabel.
+     */
     protected $table = 'products';
+
+    /**
+     * Primary Key.
+     */
     protected $primaryKey = 'id_produk';
 
+    /**
+     * Mass Assignment.
+     */
     protected $fillable = [
         'id_kategori',
         'nama_produk',
@@ -27,13 +42,16 @@ class Product extends Model
         'foto',
     ];
 
-     /**
+    /**
      * Relasi ke Category.
      */
-
-    public function category()
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'id_kategori', 'id_kategori');
+        return $this->belongsTo(
+            Category::class,
+            'id_kategori',
+            'id_kategori'
+        );
     }
 
     /**
@@ -41,6 +59,22 @@ class Product extends Model
      */
     public function sales(): HasMany
     {
-        return $this->hasMany(Sale::class, 'id_produk', 'id_produk');
+        return $this->hasMany(
+            Sales::class,
+            'id_produk',
+            'id_produk'
+        );
+    }
+
+    /**
+     * Relasi ke Stock In.
+     */
+    public function stockIns(): HasMany
+    {
+        return $this->hasMany(
+            StockIn::class,
+            'id_produk',
+            'id_produk'
+        );
     }
 }

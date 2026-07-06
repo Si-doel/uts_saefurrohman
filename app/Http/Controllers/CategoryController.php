@@ -50,10 +50,28 @@ class CategoryController extends Controller
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
-    public function destroy(Category $category): RedirectResponse
+    public function destroy(Category $category)
     {
+        // Cek apakah kategori masih digunakan produk
+        if ($category->products()->exists()) {
+
+            return redirect()
+                ->route('categories.index')
+                ->with(
+                    'error',
+                    'Kategori "' . $category->nama_kategori .
+                        '" tidak dapat dihapus karena masih digunakan oleh produk.'
+                );
+        }
+
+        // Soft Delete
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
+        return redirect()
+            ->route('categories.index')
+            ->with(
+                'success',
+                'Kategori berhasil dihapus.'
+            );
     }
 }
