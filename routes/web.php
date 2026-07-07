@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DeveloperMenuController;
 use App\Http\Controllers\DeveloperUserController;
@@ -27,12 +28,9 @@ Route::get('/', function () {
 Dashboard
 */
 
-Route::get('/dashboard', function () {
-
-    $categories = Category::withCount('products')->get();
-
-    return view('pages.index', compact('categories'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 /*
 Authenticated Route
@@ -93,51 +91,50 @@ Route::middleware('auth')->group(function () {
     */
 
     Route::prefix('report')
-    ->name('report.')
-    ->group(function () {
+        ->name('report.')
+        ->group(function () {
 
-        /*        
+            /*        
         Sales Report        
         */
 
-        Route::get('/sales', [ReportController::class, 'sales'])
-            ->name('sales');
+            Route::get('/sales', [ReportController::class, 'sales'])
+                ->name('sales');
 
-        Route::get('/sales/export/excel', [ReportController::class, 'exportSalesExcel'])
-            ->name('sales.excel');
+            Route::get('/sales/export/excel', [ReportController::class, 'exportSalesExcel'])
+                ->name('sales.excel');
 
-        Route::get('/sales/export/pdf', [ReportController::class, 'exportSalesPdf'])
-            ->name('sales.pdf');
+            Route::get('/sales/export/pdf', [ReportController::class, 'exportSalesPdf'])
+                ->name('sales.pdf');
 
-        /*        
+            /*        
         Stock In Report        
         */
 
-        Route::get('/stock-in', [ReportController::class, 'stockIn'])
-            ->name('stock_in');
+            Route::get('/stock-in', [ReportController::class, 'stockIn'])
+                ->name('stock_in');
 
-        Route::get('/stock-in/export/excel', [ReportController::class, 'exportStockInExcel'])
-            ->name('stock_in.excel');
+            Route::get('/stock-in/export/excel', [ReportController::class, 'exportStockInExcel'])
+                ->name('stock_in.excel');
 
-        Route::get('/stock-in/export/pdf', [ReportController::class, 'exportStockInPdf'])
-            ->name('stock_in.pdf');
+            Route::get('/stock-in/export/pdf', [ReportController::class, 'exportStockInPdf'])
+                ->name('stock_in.pdf');
 
-        /*        
+            /*        
         Product Report        
         */
 
-        Route::get('/product', [ReportController::class, 'product'])
-            ->name('product');
+            Route::get('/product', [ReportController::class, 'product'])
+                ->name('product');
 
-        Route::get('/product/export/excel', [ReportController::class, 'exportProductExcel'])
-            ->name('product.excel');
+            Route::get('/product/export/excel', [ReportController::class, 'exportProductExcel'])
+                ->name('product.excel');
 
-        Route::get('/product/export/pdf', [ReportController::class, 'exportProductPdf'])
-            ->name('product.pdf');
+            Route::get('/product/export/pdf', [ReportController::class, 'exportProductPdf'])
+                ->name('product.pdf');
+        });
 
-    });
 
-     
 
     /*    
     Developer    
