@@ -7,6 +7,7 @@ use App\Models\Sales;
 use App\Models\StockIn;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\ProductExport;
 use App\Exports\SalesExport;
 use App\Exports\StockInExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,15 +19,53 @@ class ReportController extends Controller
     /**
      * Menampilkan halaman Product Report.
      */
-    public function product(Request $request): View
+    public function product()
     {
-        $products = Product::orderBy('nama_produk')
+        $products = Product::with('category')
+            ->orderBy('nama_produk')
             ->get();
 
         return view(
             'pages.report.product',
             compact('products')
         );
+    }
+
+    /**
+     * Export Product Report ke Excel.
+     */
+    public function exportProductExcel()
+    {
+        return Excel::download(
+
+            new ProductExport(),
+
+            'Product_Report_' .
+                now()->format('Ymd_His') .
+                '.xlsx'
+
+        );
+    }
+
+    /**
+     * Export Product Report ke PDF.
+     */
+    public function exportProductPdf()
+    {
+        $products = Product::with('category')
+            ->orderBy('nama_produk')
+            ->get();
+
+        return Pdf::view(
+            'pdf.product',
+            compact('products')
+        )
+            ->format('A4')
+            ->landscape()
+            ->name(
+                'Product_Report_' . now()->format('Ymd_His') . '.pdf'
+            )
+            ->download();
     }
 
     /**
@@ -140,6 +179,27 @@ class ReportController extends Controller
         return view(
             'pages.report.stock_in',
             compact('stockIns')
+        );
+    }
+
+    /**
+     * Export Stock In Report ke Excel.
+     */
+    public function exportStockInExcel(Request $request)
+    {
+        return Excel::download(
+
+            new StockInExport(
+                $request->tanggal_awal,
+                $request->tanggal_akhir
+            ),
+
+            'Stock_In_Report_' .
+                $request->tanggal_awal .
+                '_sd_' .
+                $request->tanggal_akhir .
+                '.xlsx'
+
         );
     }
 
