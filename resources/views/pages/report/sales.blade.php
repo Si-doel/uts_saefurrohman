@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('page-header')
-    <div class="page-header">
-        <h3 class="fw-bold mb-3">
+    <div class="page-header d-flex flex-wrap align-items-start justify-content-between">
+        <h4 class="fw-bold mb-3">
             Sales Report
-        </h3>
+        </h4>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ route('dashboard') }}">
@@ -21,7 +21,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                Sales Report
+                <a href="#">Sales Report</a>
             </li>
         </ul>
     </div>
